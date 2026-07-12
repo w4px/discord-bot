@@ -3,6 +3,10 @@ const fs = require('fs');
 const path = require('path');
 require('dotenv').config();
 const mongoose = require('mongoose');
+const express = require('express');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
 
 const client = new Client({
   intents: [
@@ -52,6 +56,19 @@ for (const file of eventFiles) {
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/discord-bot')
   .then(() => console.log('✅ تم الاتصال بـ MongoDB'))
   .catch(err => console.error('❌ خطأ في الاتصال بـ MongoDB:', err));
+
+// Express Server
+app.get('/', (req, res) => {
+  res.send('🤖 البوت يعمل بنجاح!');
+});
+
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', bot: client.user?.username || 'not ready' });
+});
+
+app.listen(PORT, () => {
+  console.log(`✅ Server يستمع على البورت ${PORT}`);
+});
 
 // تسجيل الدخول
 client.login(process.env.DISCORD_TOKEN);
